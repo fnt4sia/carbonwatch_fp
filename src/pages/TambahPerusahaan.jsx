@@ -34,14 +34,14 @@ export default function TambahPerusahaan() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { company_id, nama_perusahaan, sector, alamat, kontak, npwp, website, gambar } = form;
+    const { company_id, nama_perusahaan, sector, address, contact, npwp, website, gambar } = form;
     const { error } = await supabase.from('company').insert([
       {
         company_id,
         nama_perusahaan,
         sector,
-        alamat,
-        kontak,
+        address,
+        contact,
         npwp,
         website,
         gambar,
@@ -143,8 +143,8 @@ export default function TambahPerusahaan() {
                   <label className="block font-medium mb-1">Alamat</label>
                   <input
                     type="text"
-                    name="alamat"
-                    value={form.alamat}
+                    name="address"
+                    value={form.address}
                     onChange={handleChange}
                     placeholder="Alamat Perusahaan"
                     className="w-full bg-gray-100 rounded-lg px-4 py-3"
@@ -154,8 +154,8 @@ export default function TambahPerusahaan() {
                   <label className="block font-medium mb-1">Kontak</label>
                   <input
                     type="text"
-                    name="kontak"
-                    value={form.kontak}
+                    name="contact"
+                    value={form.contact}
                     onChange={handleChange}
                     placeholder="Kontak Perusahaan"
                     className="w-full bg-gray-100 rounded-lg px-4 py-3"

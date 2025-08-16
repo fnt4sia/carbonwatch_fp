@@ -15,7 +15,7 @@ export default function Detail() {
 
   const statusColors = {
     Normal: 'text-green-600',
-    Suspicious: 'text-orange-500',
+    Caution: 'text-orange-500',
     'Red-Flagged': 'text-red-600',
   };
 
@@ -42,21 +42,21 @@ export default function Detail() {
   }, [id]);
 
   const countByStatus = () => {
-    const count = { Verified: 0, Suspicious: 0, 'High-Risk': 0 };
+    const count = { Verified: 0, Caution: 0, 'High-Risk': 0 };
     transactions.forEach(tx => {
-      const label = tx.label || 'Verified';
+      const label = tx["Label"] || 'Verified';
       if (count[label] !== undefined) {
         count[label]++;
       }
     });
     return [
       { name: 'Verified', value: count.Verified },
-      { name: 'Suspicious', value: count.Suspicious },
+      { name: 'Caution', value: count.Caution },
       { name: 'High-Risk', value: count['High-Risk'] },
     ];
   };
 
-  const getMonthlySuspiciousTrend = () => {
+  const getMonthlyCautionTrend = () => {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -65,7 +65,7 @@ export default function Detail() {
     // Initialize data array with zero counts
     const monthlyData = months.map(month => ({
       month,
-      suspicious: 0,
+      caution: 0,
       highRisk: 0
     }));
 
@@ -75,9 +75,9 @@ export default function Detail() {
       const currentMonth = '2025-08-16';
       const monthIndex = new Date(currentMonth).getMonth();
       
-      if (t.label === 'Suspicious') {
-        monthlyData[monthIndex].suspicious++;
-      } else if (t.label === 'High-Risk') {
+      if (t["Label"] === 'Caution') {
+        monthlyData[monthIndex].caution++;
+      } else if (t["Label"] === 'High-Risk') {
         monthlyData[monthIndex].highRisk++;
       }
     });
@@ -122,11 +122,11 @@ export default function Detail() {
               <h3 className="font-semibold mb-2">Tren Transaksi Mencurigakan dan Berisiko Tinggi</h3>
               <div className="flex-1 flex items-center">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={getMonthlySuspiciousTrend()}>
+                  <LineChart data={getMonthlyCautionTrend()}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis allowDecimals={false} />
-                    <Line type="monotone" dataKey="suspicious" stroke="#FFB547" strokeWidth={2} name="Suspicious" />
+                    <Line type="monotone" dataKey="caution" stroke="#FFB547" strokeWidth={2} name="Caution" />
                     <Line type="monotone" dataKey="highRisk" stroke="#FF4842" strokeWidth={2} name="High Risk" />
                     <LineTooltip />
                   </LineChart>
@@ -162,7 +162,10 @@ export default function Detail() {
           <div className="bg-white rounded-2xl shadow-lg overflow-x-auto border border-gray-100">
             <div className="flex items-center justify-between px-6 pt-6 pb-3">
               <h3 className="text-lg font-semibold">Daftar Transaksi</h3>
-              <button onClick={() => navigate('/tambah-transaksi')} className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-700 transition">
+              <button 
+                onClick={() => navigate('/tambah-transaksi', { state: { company } })} 
+                className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-700 transition"
+              >
                 + Tambah Transaksi
               </button>
             </div>
@@ -194,16 +197,16 @@ export default function Detail() {
                   >
                     <td className="px-6 py-4">{t.transaction_id}</td>
                     <td className="px-6 py-4">2025-08-16</td>
-                    <td className="px-6 py-4">{t.transaction_amount}</td>
-                    <td className="px-6 py-4">{t.carbon_volume}</td>
-                    <td className="px-6 py-4">{t.price_per_ton}</td>
-                    <td className="px-6 py-4">{t.origin_country}</td>
+                    <td className="px-6 py-4">{t["Transaction Amount"]}</td>
+                    <td className="px-6 py-4">{t["Carbon Volume"]}</td>
+                    <td className="px-6 py-4">{t["Price per Ton"]}</td>
+                    <td className="px-6 py-4">{t["Origin Country"]}</td>
                     <td className={`px-6 py-4 font-medium ${
-                      t.label === 'Suspicious' ? 'text-yellow-500' :
-                      t.label === 'High-Risk' ? 'text-red-500' :
+                      t["Label"] === 'Caution' ? 'text-yellow-500' :
+                      t["Label"] === 'High-Risk' ? 'text-red-500' :
                       'text-green-500'
                     }`}>
-                      {t.label || 'Normal'}
+                      {t["Label"] || 'Normal'}
                     </td>
                   </tr>
                 ))}

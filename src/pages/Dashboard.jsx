@@ -51,9 +51,9 @@ function Dashboard() {
         const companyTransactions = transactions.filter(t => t.company_id === company.company_id);
         
         const totals = companyTransactions.reduce((acc, t) => ({
-          totalVolume: acc.totalVolume + (parseFloat(t.carbon_volume) || 0),
-          totalAmount: acc.totalAmount + (parseFloat(t.transaction_amount) || 0),
-          suspiciousCount: acc.suspiciousCount + (t.label === 'Suspicious' || t.label === 'High-Risk' ? 1 : 0)
+          totalVolume: acc.totalVolume + (parseFloat(t["Carbon Volume"]) || 0),
+          totalAmount: acc.totalAmount + (parseFloat(t["Transaction Amount"]) || 0),
+          suspiciousCount: acc.suspiciousCount + (t["Label"] === 'Caution' || t["Label"] === 'High-Risk' ? 1 : 0)
         }), { totalVolume: 0, totalAmount: 0, suspiciousCount: 0 });
 
         return {
