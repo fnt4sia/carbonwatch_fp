@@ -113,6 +113,9 @@ export default function TambahTransaksi() {
         const predictionResult = await response.json();
         const prediction = predictionResult.predictions[0];
 
+        // Generate a random transaction ID
+        const randomTransactionId = Math.floor(Math.random() * 1000000) + 1;
+
         // Prepare data for Supabase
         const transactionData = {
           "Transaction Amount": apiData["Transaction Amount"],
@@ -126,7 +129,7 @@ export default function TambahTransaksi() {
           "Entity Type": apiData["Entity Type"],
           "Label": prediction.label,
           company_id: company.company_id,  // Keep this for relationship
-          transaction_id: prediction.transaction_id  // Keep this as identifier
+          transaction_id: randomTransactionId  // Use random ID instead of prediction ID
         };
 
         // Insert into Supabase
@@ -140,7 +143,7 @@ export default function TambahTransaksi() {
 
         // Prepare and insert transaction_detail data
         const transactionDetailData = {
-          transaction_id: prediction.transaction_id,
+          transaction_id: randomTransactionId,
           verify_status: false,
           ai_summary: prediction.explanation.ai_summary
         };

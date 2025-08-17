@@ -73,7 +73,7 @@ export default function DetailTransaksi() {
       // First, update the transaction label
       const { data: transactionData, error: transactionError } = await supabase
         .from('transaction')
-        .update({ label: finalStatus })
+        .update({ Label: finalStatus })
         .eq('transaction_id', transaction.transaction_id)
         .select('*');
 
@@ -117,7 +117,7 @@ export default function DetailTransaksi() {
 
   const statusColor = {
     Normal: 'bg-green-500',
-    Suspicious: 'bg-orange-500',
+    Caution: 'bg-orange-500',
     'Red-Flagged': 'bg-red-500',
   };
 
@@ -145,7 +145,7 @@ export default function DetailTransaksi() {
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-medium">{transaction.id}</span>
                 <span className={`text-white text-xs px-2 py-1 rounded ${
-                  transaction["Label"] === 'Suspicious' ? statusColor.Suspicious :
+                  transaction["Label"] === 'Caution' ? statusColor.Caution :
                   transaction["Label"] === 'High-Risk' ? statusColor['Red-Flagged'] :
                   statusColor.Normal
                 }`}>
