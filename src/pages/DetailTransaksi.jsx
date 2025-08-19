@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { FiEdit3 } from "react-icons/fi";
-import { IoChevronBack } from "react-icons/io5";
+import { IoChevronBack, IoClose } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../SupabaseClient";
+import ReactMarkdown from 'react-markdown';
 
 export default function DetailTransaksi() {
   const location = useLocation();
   const navigate = useNavigate();
   const { transaction } = location.state || {};
   const [verificationDetail, setVerificationDetail] = useState(null);
+  const [technicalReasons, setTechnicalReasons] = useState([]);
+  const [aiSummary, setAiSummary] = useState(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showAIDetailModal, setShowAIDetailModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showAISummary, setShowAISummary] = useState(false);
 
   useEffect(() => {
     const fetchVerificationDetail = async () => {
@@ -32,6 +36,8 @@ export default function DetailTransaksi() {
       // If we found existing data, use it
       if (data && data.length > 0) {
         setVerificationDetail(data[0]);
+        setTechnicalReasons(data[0].technical_reasons || []);
+        setAiSummary(data[0].ai_summary || null);
         return;
       }
 
@@ -334,59 +340,11 @@ export default function DetailTransaksi() {
 
         {/* AI Insight */}
         {!verificationDetail?.verify_status && (
-          <div className="bg-white rounded-xl p-6 space-y-3">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-violet-100 text-violet-600 rounded-full flex items-center justify-center text-xl">
-                ⚡
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Mendeteksi pola transaksi yang tidak wajar</p>
-                <p className="font-semibold">Petunjuk AI</p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm text-gray-700 mb-3">
-                Telah mendeteksi potensi transaksi mencurigakan pada transaksi{" "}
-                <span className="font-semibold">{transaction.transaction_id}</span>
-              </p>
-
-              {/* AI Insight Items */}
-              <div
-                onClick={() => setShowAIDetailModal(true)}
-                className="bg-pink-50 text-pink-600 px-4 py-2 rounded-lg cursor-pointer hover:bg-pink-100 transition-colors text-sm"
-              >
-                Melakukan transaksi di luar jam kerja normal
-              </div>
-
-              <div
-                onClick={() => setShowAIDetailModal(true)}
-                className="bg-orange-50 text-orange-600 px-4 py-2 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors text-sm"
-              >
-                Volume transaksi tidak proporsional dengan profil industri
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* AI Detail Modal */}
-        {showAIDetailModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-start z-50">
-            <div className="bg-white w-96 h-full overflow-y-auto">
-              <div className="p-6">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold">Detail</h2>
-                  <button
-                    onClick={() => setShowAIDetailModal(false)}
-                    className="text-gray-500 hover:text-gray-700 text-xl"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {/* AI Insight Header */}
-                <div className="flex items-center gap-3 mb-6">
+          <div className="bg-white rounded-xl p-6">
+            {!showAIDetailModal ? (
+              // Single column layout when detail is not shown
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-violet-100 text-violet-600 rounded-full flex items-center justify-center text-xl">
                     ⚡
                   </div>
@@ -396,70 +354,81 @@ export default function DetailTransaksi() {
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-700 mb-6">
-                  Telah mendeteksi potensi transaksi mencurigakan pada transaksi{" "}
-                  <span className="font-semibold">{transaction.transaction_id}</span>
-                </p>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-700 mb-3">
+                    Telah mendeteksi potensi transaksi mencurigakan pada transaksi{" "}
+                    <span className="font-semibold">{transaction.transaction_id}</span>
+                  </p>
 
-                {/* Highlighted Items */}
-                <div className="space-y-4 mb-6">
-                  <div className="bg-pink-50 text-pink-600 px-4 py-2 rounded-lg text-sm">
-                    Melakukan transaksi di luar jam kerja normal
-                  </div>
-
-                  <div className="bg-orange-50 text-orange-600 px-4 py-2 rounded-lg text-sm">
-                    Volume transaksi tidak proporsional dengan profil industri
-                  </div>
-                </div>
-
-                {/* Detailed Explanation */}
-                <div className="space-y-4">
-                  <p className="font-semibold text-gray-800">Alasan Peringatan AI:</p>
-
-                  <div>
-                    <p className="font-medium text-gray-700 mb-2">1. Transaksi Dilakukan di Luar Jam Normal:</p>
-                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1 ml-4">
-                      <li>
-                        Transaksi ini dilakukan pada waktu yang tidak biasa, yaitu pada pukul 23:32:00, di luar jam
-                        transaksi yang biasa terjadi (08:00 - 18:00).
-                      </li>
-                      <li>
-                        Model AI mempelajari pola waktu transaksi sebelumnya dan menandai aktivitas ini sebagai
-                        mencurigakan karena tidak sesuai dengan profil jam operasi perusahaan.
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p className="font-medium text-gray-700 mb-2">
-                      2. Volume Transaksi Tidak Proporsional dengan Profil Industri:
-                    </p>
-                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1 ml-4">
-                      <li>
-                        Volume karbon yang terlibat ({parseFloat(transaction["Carbon Volume"] || 0).toLocaleString()}{" "}
-                        ton) jauh lebih besar dibandingkan transaksi karbon lainnya dalam sektor ini, yang rata-rata
-                        hanya berkisar antara 10,000 hingga 30,000 ton per transaksi.
-                      </li>
-                      <li>
-                        AI menggunakan dataset historis dan perbandingan dengan industri serupa untuk menandai transaksi
-                        ini sebagai outlier yang patut diperiksa lebih lanjut.
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* AI Action */}
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                  <p className="font-medium text-gray-800 mb-2">Tindakan yang Diambil oleh AI:</p>
-                  <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                    <li>
-                      Skor Risiko: 85% - Transaksi mencurigakan dengan probabilitas tinggi terjadinya kecurangan atau
-                      pencucian uang.
-                    </li>
-                  </ul>
+                  {/* AI Insight Items */}
+                  {technicalReasons.map((reason, index) => (
+                    <div
+                      key={index}
+                      onClick={() => setShowAIDetailModal(!showAIDetailModal)}
+                      className={`${
+                        index % 2 === 0 ? 'bg-pink-50 text-pink-600' : 'bg-orange-50 text-orange-600'
+                      } px-4 py-2 rounded-lg cursor-pointer hover:bg-${index % 2 === 0 ? 'pink' : 'orange'}-100 transition-colors text-sm`}
+                    >
+                      {reason}
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            ) : (
+              // Two column layout when detail is shown
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column - Detail Analysis */}
+                <div className="bg-white rounded-xl p-6 border border-gray-200">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-semibold">Detail Analisis AI</h2>
+                    <button
+                      onClick={() => setShowAIDetailModal(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <IoClose className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {aiSummary && (
+                    <div className="prose prose-sm max-w-none">
+                      <ReactMarkdown>{aiSummary}</ReactMarkdown>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right Column - Technical Reasons */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-violet-100 text-violet-600 rounded-full flex items-center justify-center text-xl">
+                      ⚡
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Mendeteksi pola transaksi yang tidak wajar</p>
+                      <p className="font-semibold">Petunjuk AI</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-700 mb-3">
+                      Telah mendeteksi potensi transaksi mencurigakan pada transaksi{" "}
+                      <span className="font-semibold">{transaction.transaction_id}</span>
+                    </p>
+
+                    {technicalReasons.map((reason, index) => (
+                      <div
+                        key={index}
+                        onClick={() => setShowAIDetailModal(!showAIDetailModal)}
+                        className={`${
+                          index % 2 === 0 ? 'bg-pink-50 text-pink-600' : 'bg-orange-50 text-orange-600'
+                        } px-4 py-2 rounded-lg cursor-pointer hover:bg-${index % 2 === 0 ? 'pink' : 'orange'}-100 transition-colors text-sm`}
+                      >
+                        {reason}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>

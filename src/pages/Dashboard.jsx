@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../SupabaseClient"; // make sure this path is correct
+import icon1 from "../../assets/icon1.png";
+import icon2 from "../../assets/icon2.png";
+import icon3 from "../../assets/icon3.png";
+import icon4 from "../../assets/icon4.png"; 
 
 function InfoCard({ title, value, percent, icon }) {
   return (
     <div className="bg-white rounded-xl shadow-md p-4 flex flex-col gap-2">
       <div className="flex items-center gap-2 text-gray-600">
-        <span className="text-xl">{icon}</span>
+        <img src={icon} alt={title} className="w-8 h-8 object-contain" />
         <span className="font-medium">{title}</span>
       </div>
       <div className="flex items-center gap-2 text-2xl font-bold text-gray-800">
@@ -95,7 +99,7 @@ function Dashboard() {
 
       <main className="flex justify-center py-8 px-4">
         <div className="w-full max-w-7xl space-y-8">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold text-gray-800">Dashboard</h2>
             <button
               onClick={() => navigate("/tambah-perusahaan")}
@@ -106,24 +110,29 @@ function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            <InfoCard title="Perusahaan Dipantau" value={companyData.length} percent="5%" icon="🏢" />
+            <InfoCard 
+              title="Perusahaan Dipantau" 
+              value={companyData.length} 
+              percent="5%" 
+              icon={icon1} 
+            />
             <InfoCard
               title="Volume Karbon"
               value={`${companyData.reduce((sum, c) => sum + (c.totalVolume || 0), 0).toLocaleString()} Ton`}
               percent="5%"
-              icon="🌱"
+              icon={icon2}
             />
             <InfoCard
               title="Nilai Transaksi"
               value={`$${companyData.reduce((sum, c) => sum + (c.totalAmount || 0), 0).toLocaleString()}`}
               percent="8%"
-              icon="💰"
+              icon={icon3}
             />
             <InfoCard
               title="Transaksi Mencurigakan"
               value={companyData.reduce((sum, c) => sum + (c.suspiciousCount || 0), 0)}
               percent="1%"
-              icon="🚩"
+              icon={icon4}
             />
           </div>
 

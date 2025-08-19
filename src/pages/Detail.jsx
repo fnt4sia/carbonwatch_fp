@@ -71,6 +71,7 @@ export default function Detail() {
     transactions.forEach((t) => {
       // Use the Date column if available, fallback to current date
       const transactionDate = t.Date || "2025-08-16 00:00:00";
+      console.log(transactionDate);
       const monthIndex = new Date(transactionDate).getMonth();
 
       if (t["Label"] === "Suspicious") {

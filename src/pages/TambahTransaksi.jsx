@@ -167,6 +167,7 @@ export default function TambahTransaksi() {
           transaction_id: randomTransactionId,
           verify_status: false,
           ai_summary: prediction.explanation.ai_summary,
+          technical_reasons: prediction.explanation.technical_reasons  // This is an array of strings
         };
 
         const { error: detailError } = await supabase.from("transaction_detail").insert(transactionDetailData);
