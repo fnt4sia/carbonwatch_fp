@@ -155,7 +155,7 @@ function Dashboard() {
                     className="bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer"
                     onClick={() => navigate(`/detail/${encodeURIComponent(c.company_id)}`)}
                   >
-                    <td className="px-6 py-5 text-base">{c.company_id?.slice(0, 3).toUpperCase() || "N/A"}</td>
+                    <td className="px-6 py-5 text-base">{c.company_id}</td>
                     <td className="px-6 py-5 flex items-center gap-3 text-base">
                       {c.gambar && <img src={c.gambar} alt="logo" className="w-6 h-6 rounded object-contain" />}
                       {c.nama_perusahaan}
